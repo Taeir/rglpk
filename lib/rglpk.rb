@@ -61,6 +61,21 @@ module Rglpk
 
   class Problem
     attr_accessor :rows, :cols, :obj, :lp
+    
+    # Ensure constructor is private
+    private_class_method :new
+    
+    # Creates a new problem and cleans it up afterwards:
+    #
+    #   Rglpk::Problem.create do |p|
+    #     ...
+    #   end
+    #
+    def self.create
+      p = new
+      yield p
+      p.cleanup
+    end
 
     def initialize
       @lp = Glpk_wrapper.glp_create_prob
@@ -68,15 +83,11 @@ module Rglpk
       @rows = RowArray.new
       @cols = ColArray.new
       Glpk_wrapper.glp_create_index(@lp)
-      
-      ObjectSpace.define_finalizer(self, self.class.finalizer(@lp))
     end
-    
-    def self.finalizer(lp)
-      proc do
-        Glpk_wrapper.glp_delete_index(lp)
-        Glpk_wrapper.glp_delete_prob(lp)
-      end
+  
+    def cleanup
+      Glpk_wrapper.glp_delete_index(@lp)
+      Glpk_wrapper.glp_delete_prob(@lp)
     end
     
     def name=(n)

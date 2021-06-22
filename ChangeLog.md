@@ -1,3 +1,8 @@
+# rglpk 1.0.0 2021-06-22
+
+* Update to glpk-4.65.
+* :warning: BREAKING: Switch from `Problem.new` to `Problem.create do |p| ... end` to prevent deallocation issues with regards to multithreading.
+
 # rglpk 0.2.6 2012-01-23
 
 * Fix memory leaks by adding finalizer to free GLPK problems.
